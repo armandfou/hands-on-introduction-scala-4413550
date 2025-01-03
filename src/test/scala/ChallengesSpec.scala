@@ -4,7 +4,14 @@ import org.scalatest.matchers.should.Matchers
 import Challenges._
 
 class ChallengesSpec extends AnyFreeSpec with Matchers {
-  "calculateSum" - {}
+  "calculateSum" - {
+    "add the number in the list" in {
+      val inputNames = List(1, 2, 3, 4)
+      val expectedOutput = 10
+      val result = calculateSum(inputNames)
+      result shouldBe expectedOutput
+    }
+  }
 
   "filterAndConvert" - {
     "filters names with less than four characters and converts them to uppercase" in {
