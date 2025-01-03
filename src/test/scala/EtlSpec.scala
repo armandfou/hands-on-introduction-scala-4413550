@@ -30,8 +30,22 @@ class EtlSpec extends AnyFreeSpec with Matchers {
 
       readFile(output) shouldEqual Success(expectedFileContents)
     }
+    "outputs an extract error if the input file path does not exist" in {
+      val erroneousInputFilePath = ""
+      val outputFilePath =
+        "src/test/resources/testOutput2.txt"
+      etl(erroneousInputFilePath, outputFilePath)(using
+        Etl.IntImpl
+      ) shouldEqual Left(EtlError.ExtractError)
+    }
+    "outputs a load error if the output file path does not exist" in {
+      val inputFilePath = "src/test/resources/testInput2.txt"
+      val erroneousInputFilePath = ""
+      etl(inputFilePath, erroneousInputFilePath)(using
+        Etl.IntImpl
+      ) shouldEqual Left(EtlError.LoadError)
+    }
   }
-
   private def readFile(filePath: String): Try[List[String]] =
     Using(Source.fromFile(filePath))(_.getLines.toList)
 }
