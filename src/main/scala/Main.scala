@@ -1,12 +1,13 @@
 import java.io.{File, FileWriter}
 import scala.io.Source
 import scala.util.{Using, Try}
+import Etl.*
 
 @main def run: Unit =
   val input: String = "src/main/resources/input.txt"
   val output: String = "src/main/resources/output.txt"
-  etl(input, output)
-
+  Etl.etl[List[String], List[String]](input, output)
+/*
 def etl(inputFilePath: String, outputFilePath: String): Unit =
   val extracted = extract(inputFilePath)
   val transformed = transform(extracted)
@@ -27,3 +28,4 @@ def load(data: List[String], output: String): Unit =
   fileWriter.write(data.mkString("\n"))
   fileWriter.close()
 end load
+ */
