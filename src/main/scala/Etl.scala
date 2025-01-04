@@ -1,6 +1,8 @@
+import io.circe.parser.decode
+
 object Etl:
   enum EtlError:
-    case ExtractError, LoadError
+    case ExtractError, LoadError, JsonParseError
 
   sealed trait Etl[A, B]:
     def extract(input: String): Either[EtlError, A]
@@ -24,7 +26,19 @@ object Etl:
     ).withLeft[EtlError]
     def load(data: List[Int], output: String): Either[EtlError, Unit] =
       FileUtils.load(data, output)
-
+  given JsonImpl: Etl[List[String], List[User]] with
+    def extract(input: String): Either[EtlError, List[String]] =
+      FileUtils.extract(input)
+    def transform(data: List[String]): Either[EtlError, List[User]] =
+      for
+        users <- decode[List[User]](data.mkString).left.map(_ =>
+          EtlError.JsonParseError
+        )
+        userOver18 = users.filter(_.age >= 18)
+      yield userOver18
+    end transform
+    def load(data: List[User], output: String): Either[EtlError, Unit] =
+      FileUtils.load(data, output)
   def etl[A, B](config: EtlConfig, etl: Etl[A, B]): Either[EtlError, Unit] =
     for
       extracted <- etl.extract(config.inputFilePath)
